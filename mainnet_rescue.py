@@ -16,6 +16,10 @@ from web3.exceptions import TransactionNotFound
 from web3morebundlers import bundler
 
 
+
+
+
+
 def main():
     #Load accounts and keys
     load_dotenv()
@@ -28,6 +32,7 @@ def main():
     #connect to llamarpc and intiialize web3 instance
     w3 = Web3(HTTPProvider(os.environ.get("ETH_RPC")))
     print(f"Connected: {w3.isConnected()}")
+    
     gasprice = w3.eth.gas_price
     print(gasprice)
 
@@ -43,20 +48,7 @@ def main():
     #     "https://rpc.nfactorial.xyz",
     # ]
 
-    # bundler(
-    #     w3=w3,
-    #     signature_account=FLASHBOT_SIGNER,
-    #     endpoint_uris=BUNDLER_ENPOINTS,
-    #     flashbots_uri=("https://relay.flashbots.net"),
-    # )
 
-
-
-
-    # flashbotsProvider = FlashbotProvider(
-    #     w3,
-    #     FLASHBOT_SIGNER
-    # )
 
     flashbot(
         w3, #this doesn't allow flashbotProvider
@@ -72,13 +64,14 @@ def main():
 
     #prepare eth send tx from gasser to comp
     nonce = w3.eth.get_transaction_count(GASSER_WALLET.address)
-    #print(f"Nonce:{nonce}")
+    
     
     
     basefee=math.floor(gasprice*5/2)
     print(f"CurrentBase Fee : {gasprice}")
     print(f"Base Fee sent (x2.5) : {basefee}")   
-
+    
+    #gas calculations for 1st tx
     ethbalance = w3.eth.get_balance(GASSER_WALLET.address)
     glimit1=21000
     glimit2=80000
@@ -90,7 +83,7 @@ def main():
 
     
     
-    
+    #gas calculations for 2nd tx
     txfee2=ethbalance-txfee1
     maxFeePerGas2=math.floor(txfee2/glimit2)
     maxPriorityFeePerGas2=maxFeePerGas2-basefee
